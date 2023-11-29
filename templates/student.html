@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block content %}
+  
+<div class="container" style="margin-left: 250px;">
+  <h1 class="mt-2">All Students</h1>
+  <form>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <label for="searchInput">Search</label>
+        <div class="input-group">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search students" onkeyup="searchStudents()">
+          <div class="input-group-append">
+            <button type="button" class="btn btn-primary" onclick="searchStudents()">Search</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <table class="table table-bordered">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" onclick="sortTable(0)">Index</th>
+        <th scope="col" onclick="sortTable(1)">Name</th>
+        <th scope="col" onclick="sortTable(2)">Register Number</th>
+        <th scope="col" onclick="sortTable(3)">Department</th>
+        <th scope="col" onclick="sortTable(4)">Phone Number</th>
+        <th scope="col" onclick="sortTable(5)">Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in student %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ i.name }}</td>
+        <td>{{ i.reg_number }}</td>
+        <td>{{ i.department }}</td>
+        <td>{{ i.ph_no }}</td>
+        <td class="act">
+          <a href="/edit-student?studentid={{ i.id }}"><button type="button" class="btn btn-primary">Edit</button></a>
+          <a href="/delete-student?studentid={{ i.id }}"><button type="button" class="btn btn-danger">Delete</button></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  function sortTable(columnIndex) {
+    var table, rows, switching, i, x, y, shouldSwitch;
+    table = document.querySelector("table");
+    switching = true;
+
+    while (switching) {
+      switching = false;
+      rows = table.rows;
+
+      for (i = 1; i < rows.length - 1; i++) {
+        shouldSwitch = false;
+        x = rows[i].getElementsByTagName("td")[columnIndex].innerHTML.toLowerCase();
+        y = rows[i + 1].getElementsByTagName("td")[columnIndex].innerHTML.toLowerCase();
+
+        if (x > y) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+
+      if (shouldSwitch) {
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+      }
+    }
+  }
+
+  function searchStudents() {
+    var input, filter, table, tr, td, i, j, txtValue, found;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.querySelector("table");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+      found = false;
+      for (j = 0; j < tr[i].cells.length; j++) {
+        td = tr[i].getElementsByTagName("td")[j];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            found = true;
+            break;
+          }
+        }
+      }
+      tr[i].style.display = found ? "" : "none";
+    }
+  }
+</script>
+
+{% endblock %}
